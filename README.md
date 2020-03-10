@@ -15,7 +15,7 @@ This is done last to help prevent CPU exhaustion denial-of-service attacks.
 ### 3)Consensus Script Check
 
 ### 4)Finalize Check
-
+This part finalizes the transaction. Conflicting transactions are removed. The fee is determined here as well after which the transaction is stored into the memory. The finalization ends with a clean up
 
 ### 5)Accept Transaction in MemPool 
 This part mainly decides when we accept a transaction.
