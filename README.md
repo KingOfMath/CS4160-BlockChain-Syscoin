@@ -15,10 +15,10 @@ Check the has witness
 Check whether the script fits the requirement of the Syscoin input script
 
 ### 3)Consensus Script Check
-Check inputs from mempool and cache , make sure 
-check whether it is a syscoin transcation
-check syscoin inputs
-check whether there is a duplicate
+CheckInputsFromMempoolAndCache
+IsSyscoinTx
+CheckSyscoinInputs
+check args.m_duplicate flag
 
 ### 4)Finalize Check
 
