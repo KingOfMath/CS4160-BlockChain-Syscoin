@@ -6,9 +6,11 @@ We divided it into 6 steps:
 
 ### 1)Pre check
 Before actually starting our transaction, we should pre-check our transaction states. 
+We check if the transaction size is too small, if it is already in the mempool, if there exists any conflict with in-memory transactions, if all the inputs exist and meet standards and other conditions are may add fee rate junk.
 
 ### 2)Policy Script Check
-This part checks input scripts and signatures, and check again against the current block tip's script verification. This is done last to help prevent CPU exhaustion denial-of-service attacks.
+This part checks input scripts and signatures, and check again against the current block tip's script verification. 
+This is done last to help prevent CPU exhaustion denial-of-service attacks.
 
 ### 3)Consensus Script Check
 
