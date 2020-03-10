@@ -11,8 +11,14 @@ We check if the transaction size is too small, if it is already in the mempool, 
 ### 2)Policy Script Check
 This part checks input scripts and signatures, and check again against the current block tip's script verification. 
 This is done last to help prevent CPU exhaustion denial-of-service attacks.
+Check the has witness
+Check whether the script fits the requirement of the Syscoin input script
 
 ### 3)Consensus Script Check
+CheckInputsFromMempoolAndCache
+IsSyscoinTx
+CheckSyscoinInputs
+check args.m_duplicate flag
 
 ### 4)Finalize Check
 This final check removes conflicting transactions from the mempool, deletes duplicate inputs from an asset allocation transaction, stores transaction in memory and trims mempool.
