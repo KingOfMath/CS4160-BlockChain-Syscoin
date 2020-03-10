@@ -22,5 +22,4 @@ This part mainly decides when we accept a transaction.
 
 
 ### 6) Mempool update
-We need to limit mempool size and update the mempool with time for reorgization.
-
+We need to limit mempool size and update the mempool with time for reorganization. Invalid transaction blocks will be removed from the mempool. Furthermore this function will try to add back lost transaction blocks. The size of the mempool is updated accordingly
