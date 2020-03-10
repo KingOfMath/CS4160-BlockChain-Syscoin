@@ -275,17 +275,24 @@ private:
 static void LimitMempoolSize(CTxMemPool& pool, size_t limit, std::chrono::seconds age)
     EXCLUSIVE_LOCKS_REQUIRED(pool.cs, ::cs_main)
 {
+    // Checks for all expired Transactions
     int expired = pool.Expire(GetTime<std::chrono::seconds>() - age);
+    // Log them
     if (expired != 0) {
         LogPrint(BCLog::MEMPOOL, "Expired %i transactions from the memory pool\n", expired);
     }
 
+    // Vector which contains the no spends remaining
     std::vector<COutPoint> vNoSpendsRemaining;
+    // This function removes some transactions from the mempool. It trims down transactions with fees close to the transaction itself. 
     pool.TrimToSize(limit, &vNoSpendsRemaining);
     for (const COutPoint& removed : vNoSpendsRemaining)
         ::ChainstateActive().CoinsTip().Uncache(removed);
 }
 
+// if the block is initial, it is not the current for fee estimation
+// if the current chain block time is lower than the maximum fee tip age
+// if the current height is lower than the best height, the current fee is not the current estimation
 static bool IsCurrentForFeeEstimation() EXCLUSIVE_LOCKS_REQUIRED(cs_main)
 {
     AssertLockHeld(cs_main);
