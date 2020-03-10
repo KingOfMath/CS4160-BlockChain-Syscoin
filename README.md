@@ -11,15 +11,17 @@ We check if the transaction size is too small, if it is already in the mempool, 
 ### 2)Policy Script Check
 This part checks input scripts and signatures, and check again against the current block tip's script verification. 
 This is done last to help prevent CPU exhaustion denial-of-service attacks.
-
-### 3)Consensus Script Check
+Check the has witness
 Check whether the script fits the requirement of the Syscoin input script
 
-### 4)Finalize Check
-Check inputs from mempool and chcache
+### 3)Consensus Script Check
+Check inputs from mempool and cache , make sure 
 check whether it is a syscoin transcation
 check syscoin inputs
 check whether there is a duplicate
+
+### 4)Finalize Check
+
 
 ### 5)Accept Transaction in MemPool 
 This part mainly decides when we accept a transaction.
