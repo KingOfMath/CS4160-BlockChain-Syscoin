@@ -5,20 +5,13 @@ Since we only need to gain insights from transaction, we extract that part into 
 We divided it into 6 steps:
 
 ### 1)Pre check
-Before actually starting our transaction, this part runs the policy checks on a given transaction, excluding any script checks. This pre-check looks up inputs, calculates fee rate, considers replacement, evaluates package limits. It checks if the transaction size is too small, if it is already in the mempool, if there exists any conflict with in-memory transactions, if all the inputs exist and meet standards and other conditions may reduce fee rate.
+Before actually starting our transaction, this part runs the policy checks on a given transaction, excluding any script checks. This pre-check looks up inputs, calculates fee rate, considers replacement, evaluates package limits. It checks if the transaction size is too small, if it is already in the mempool, if there exists any conflict with in-memory transactions and other conditions may reduce fee rate.
 
 ### 2)Policy Script Check
-This part runs the script checks using policy flags. As this can be slow, we should only invoke this on transactions that have otherwise passed policy checks.
-Check the has witness
-Check whether the script fits the requirement of the Syscoin input script
+This part runs the script checks using policy flags. As this can be slow, we should only invoke this on transactions that have otherwise passed policy checks. It also checks whether the script fits the requirement of the Syscoin input script.
 
 ### 3)Consensus Script Check
-CheckInputsFromMempoolAndCache
-IsSyscoinTx
-CheckSyscoinInputs
-check args.m_duplicate flag
-
-This part re-runs the script checks using consensus flags, and tries to cache the result in the scriptecache.
+This part re-runs the script checks using consensus flags, and tries to cache the result in the scriptecache. It checks the inputs from mempool and cache and detect duplicate flag.
 
 ### 4)Finalize Check
 This final check tries to add the transaction to the mempool. It removes conflicting transactions from the mempool first, then deletes duplicate inputs from an asset allocation transaction, stores transaction in memory and trims mempool. This function returns true if the transaction is in the mempool after any size limiting is performed.
