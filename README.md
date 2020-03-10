@@ -5,12 +5,10 @@ Since we only need to gain insights from transaction, we extract that part into 
 We divided it into 6 steps:
 
 ### 1)Pre check
-Before actually starting our transaction, we should pre-check our transaction states. 
-We check if the transaction size is too small, if it is already in the mempool, if there exists any conflict with in-memory transactions, if all the inputs exist and meet standards and other conditions may reduce fee rate.
+Before actually starting our transaction, this part runs the policy checks on a given transaction, excluding any script checks. This pre-check looks up inputs, calculates fee rate, considers replacement, evaluates package limits. It checks if the transaction size is too small, if it is already in the mempool, if there exists any conflict with in-memory transactions, if all the inputs exist and meet standards and other conditions may reduce fee rate.
 
 ### 2)Policy Script Check
-This part checks input scripts and signatures, and check again against the current block tip's script verification. 
-This is done last to help prevent CPU exhaustion denial-of-service attacks.
+This part runs the script checks using policy flags. As this can be slow, we should only invoke this on transactions that have otherwise passed policy checks.
 Check the has witness
 Check whether the script fits the requirement of the Syscoin input script
 
@@ -20,8 +18,10 @@ IsSyscoinTx
 CheckSyscoinInputs
 check args.m_duplicate flag
 
+This part re-runs the script checks using consensus flags, and tries to cache the result in the scriptecache.
+
 ### 4)Finalize Check
-This final check removes conflicting transactions from the mempool, deletes duplicate inputs from an asset allocation transaction, stores transaction in memory and trims mempool.
+This final check tries to add the transaction to the mempool. It removes conflicting transactions from the mempool first, then deletes duplicate inputs from an asset allocation transaction, stores transaction in memory and trims mempool. This function returns true if the transaction is in the mempool after any size limiting is performed.
 
 ### 5)Accept Transaction in MemPool 
 This part mainly decides when we accept a transaction.
