@@ -13,9 +13,13 @@ This part checks input scripts and signatures, and check again against the curre
 This is done last to help prevent CPU exhaustion denial-of-service attacks.
 
 ### 3)Consensus Script Check
+Check whether the script fits the requirement of the Syscoin input script
 
 ### 4)Finalize Check
-
+Check inputs from mempool and chcache
+check whether it is a syscoin transcation
+check syscoin inputs
+check whether there is a duplicate
 
 ### 5)Accept Transaction in MemPool 
 This part mainly decides when we accept a transaction.
