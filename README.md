@@ -15,7 +15,7 @@ This is done last to help prevent CPU exhaustion denial-of-service attacks.
 ### 3)Consensus Script Check
 
 ### 4)Finalize Check
-
+This final check removes conflicting transactions from the mempool, deletes duplicate inputs from an asset allocation transaction, stores transaction in memory and trims mempool.
 
 ### 5)Accept Transaction in MemPool 
 This part mainly decides when we accept a transaction.
