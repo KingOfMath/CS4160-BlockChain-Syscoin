@@ -1,4 +1,40 @@
-validation.cpp can be seen as Syscoin's main function
+## testnet
+
+link: https://github.com/ValveSoftware/GameNetworkingSockets
+
+configuration:
+
+regtest = 0
+testnet = 0
+
+[test]
+rpcuser=u
+rpcpassword=p
+rpcport=18370
+server=1
+**gethtestnet=1**
+**addnode=54.203.169.179 (key)**
+**addnode=54.190.239.153 (key)**
+zmqrawmempooltx=tcp://127.0.0.1:28332
+zmqpubhashblock=tcp://127.0.0.1:28332
+
+[main]
+gethtestnet=0
+
+Things to check:
+
+1.incomingListPeers
+
+2.outcomingListPeers
+
+3."rawmempooltx"
+
+4.SyscoinCoreZMQURL
+
+
+
+## validation.cpp
+
 This file contains 5,445 lines, implementing transaction, Block I/O, Condition Check, Chain Connection, Loading and Flushing.
 Since we only need to gain insights from transaction, we extract that part into a new file.
 
