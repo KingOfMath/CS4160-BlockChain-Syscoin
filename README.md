@@ -5,20 +5,31 @@ link: https://github.com/ValveSoftware/GameNetworkingSockets
 configuration:
 
 regtest = 0
+
 testnet = 0
 
 [test]
+
 rpcuser=u
+
 rpcpassword=p
+
 rpcport=18370
+
 server=1
+
 **gethtestnet=1**
+
 **addnode=54.203.169.179 (key)**
+
 **addnode=54.190.239.153 (key)**
+
 zmqrawmempooltx=tcp://127.0.0.1:28332
+
 zmqpubhashblock=tcp://127.0.0.1:28332
 
 [main]
+
 gethtestnet=0
 
 Things to check:
