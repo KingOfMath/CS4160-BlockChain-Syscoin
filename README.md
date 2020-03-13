@@ -2,7 +2,7 @@
 
 link: https://github.com/ValveSoftware/GameNetworkingSockets
 
-configuration:
+#### configuration:
 
 regtest = 0
 
@@ -32,7 +32,7 @@ zmqpubhashblock=tcp://127.0.0.1:28332
 
 gethtestnet=0
 
-Things to check:
+#### Things to check:
 
 1.incomingListPeers
 
