@@ -1,6 +1,6 @@
 ## testnet
 
-link: https://github.com/ValveSoftware/GameNetworkingSockets
+link: https://github.com/syscoin/GameNetworkingSockets
 
 #### configuration:
 
