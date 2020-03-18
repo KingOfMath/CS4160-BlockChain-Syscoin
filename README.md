@@ -94,6 +94,7 @@ It appears that it is easier to run the file on a linux distribtion
 * go to directory where you want to place the GameNetworkSocketFiles
 * git clone https://github.com/syscoin/GameNetworkingSockets.git
 * cd GameNetworkingSockets
+* meson . build
 * ninja -C build
 * cd build/gateway
 * ./gateway
