@@ -84,3 +84,17 @@ This part mainly decides when we accept a transaction.
 ### 6) Mempool update
 We need to limit mempool size and update the mempool with time for reorgization.
 
+### How to install gateway.cpp file of GameNetworkingSockets
+It appears that it is easier to run the file on a linux distribtion
+
+## Instructions
+* sudo apt install libssl-dev
+* sudo apt install libprotobuf-dev protobuf-compiler libjsonrpccpp-dev libjsonrpccpp-tools libczmq-dev
+* sudo apt install meson
+* go to directory where you want to place the GameNetworkSocketFiles
+* git clone https://github.com/syscoin/GameNetworkingSockets.git
+* cd GameNetworkingSockets
+* ninja -C build
+* cd build/gateway
+* ./gateway
+
