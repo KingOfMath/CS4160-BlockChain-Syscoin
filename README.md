@@ -99,3 +99,8 @@ It appears that it is easier to run the file on a linux distribtion
 * cd build/gateway
 * ./gateway
 
+### Connection
+*  curl ifconfig.me
+*  ./gateway
+*  /connect
+*  /quit
