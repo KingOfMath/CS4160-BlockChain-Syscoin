@@ -87,30 +87,26 @@ bool MemPoolAccept::ConsensusScriptChecks(ATMPArgs& args, Workspace& ws, Precomp
 bool MemPoolAccept::AcceptSingleTransaction(const CTransactionRef& ptx, ATMPArgs& args)
 {
     AssertLockHeld(cs_main);
+	
     LOCK(m_pool.cs); // mempool "read lock" (held through GetMainSignals().TransactionAddedToMempool())
 
     Workspace workspace(ptx);
-
     if (!PreChecks(args, workspace)) return false;
-
     // Only compute the precomputed transaction data if we need to verify
     // scripts (ie, other policy checks pass). We perform the inexpensive
     // checks first and avoid hashing and signature verification unless those
     // checks pass, to mitigate CPU exhaustion denial-of-service attacks.
     PrecomputedTransactionData txdata(*ptx);
-
+	// Because script checks take little time, we focus on the PreChecks
+	// Check the condition of the mempool, if it is resource conflicted, unlock the mempool
+	bool isConflicted = detectMempool(m_pool);
+	if(isConflicted) UNLOCK(m_pool.cs);
     if (!PolicyScriptChecks(args, workspace, txdata)) return false;
-
     if (!ConsensusScriptChecks(args, workspace, txdata)) return false;
-        
- 
     // Tx was accepted, but not added
     if (args.m_test_accept) return true;
-
     if (!Finalize(args, workspace)) return false;
-
     GetMainSignals().TransactionAddedToMempool(ptx);
-
     return true;
 }
 
@@ -125,7 +121,14 @@ static bool AcceptToMemoryPoolWithTime(const CChainParams& chainparams, CTxMemPo
     // SYSCOIN
     bool bDuplicate = false;
     MemPoolAccept::ATMPArgs args { chainparams, state, nAcceptTime, plTxnReplaced, bypass_limits, nAbsurdFee, coins_to_uncache, test_accept, bDuplicate };
-    bool res = MemPoolAccept(pool).AcceptSingleTransaction(tx, args);
+	
+	// If taskNumber is within a specified range and acceptTime is runnable, we perform accept single transaction
+	int taskNumber = pool.size;
+	int schedulableNumber = isScheduable(pool);
+	int64_t runnableTime = isRunnable(pool,state);
+	bool res = false;
+	if( taskNumber < schedulableNumber && nAcceptTime < runnableTime )
+		res = MemPoolAccept(pool).AcceptSingleTransaction(tx, args);
     if (!res) {
         // Remove coins that were not present in the coins cache before calling ATMPW;
         // this is to prevent memory DoS in case we receive a large number of
@@ -419,6 +422,8 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     
     // SYSCOIN
     bool bDuplicate = false;
+	int tolerance = 0;
+	queue doublespendingQueue;
     // Check for conflicts with in-memory transactions
     const bool& IsAssetAllocation = IsAssetAllocationTx(tx.nVersion);
     for (const CTxIn &txin : tx.vin)
@@ -461,12 +466,14 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
                         if(actorSet.size() == 1)
                         {
                             LOCK(cs_assetallocationconflicts);
-                            // only do this the first time, relay the first double spend and fall back to normal policy to not relay and potentially ban on other double spends
-                            if(assetAllocationConflicts.find(*actorSet.begin()) == assetAllocationConflicts.end())
+							if(assetAllocationConflicts.find(*actorSet.begin()) == assetAllocationConflicts.end())
                             {
-                                // add conflicting sender
+                                // Add conflicting sender, control the number of doublespendings
                                 args.m_duplicate = true;
-                                break;
+								doublespendingQueue.add(txin);
+								tolerance++;
+								if(tolerance>MAX_DOUBLE_SPENDING_LIMITATION)
+									break;
                             }
                             else
                                 return state.Invalid(TxValidationResult::TX_MEMPOOL_POLICY, "txn-mempool-conflict");
@@ -477,8 +484,14 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
                     else
                         return state.Invalid(TxValidationResult::TX_MEMPOOL_POLICY, "txn-mempool-conflict");
                 }
-                if(!bDuplicate)
-                    setConflicts.insert(ptxConflicting->GetHash());
+                if(!bDuplicate){
+					// Detect fake conflicts: two possible secure hash functions 
+					// 1. SHA-256: A family of two similar hash functions, with different block sizes.
+					// 2. Collision Resistant: It should be hard to find two messages with the same hash value
+					if(isValidConflict(ptxConflicting->GetHash())){
+						setConflicts.insert(ptxConflicting->GetHash());
+					}
+				}
             }
         }
     }
